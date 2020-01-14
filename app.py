@@ -42,9 +42,19 @@ def cod():
     # suit
     # or should the suit be handled by js? 
 
+    # handle Rx
+
     cod = mongo.db.cards.find_one({'number': str(number)})
 
     return render_template("cod.html", card=cod, today=today)
+
+
+@app.route('/divination')
+def divination():
+    cards = mongo.db.cards.find()
+    
+    return render_template("cards.html", cards=cards)
+
 
 # route allowing displaying one record based on its id
 # and possibly editing it (if user is logged in)
