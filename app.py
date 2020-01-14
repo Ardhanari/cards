@@ -2,7 +2,7 @@ import os
 from flask import abort, Flask, flash, render_template, redirect, request, session, url_for
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
-from datetime import datetime
+from datetime import date
 import env
 
 # from pathlib import Path  # python3 only
@@ -10,21 +10,41 @@ import env
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-# app.config["MONGO_DBNAME"] = os.getenv("MONGO_DBNAME")
+app.config["MONGO_DBNAME"] = os.getenv("MONGO_DBNAME")
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
-
-print(os.getenv("MONGO_URI"))
 
 mongo = PyMongo(app)
 
 # landing page - displays all the records in the database
 @app.route('/')
 def home():
-    return render_template("index.html", records=mongo.db.repo.find().sort("date_added", -1)) # sorts from newest records to oldest
+    records=mongo.db.cards.find()
+    print(records)
+    return render_template("index.html", records=records)
 
 @app.route('/cod')
 def cod():
-    return render_template("cod.html", records=mongo.db.repo.find_one())
+
+    # selecting cod based on date of day
+    # select number
+    def digital_root(n):
+        x = sum(int(digit) for digit in str(n))
+        if x < 10:
+            return x
+        else:
+            return digital_root(x)
+    
+    today = str(date.today())
+    today_number = today.replace("-", "")
+    number = digital_root(today_number)
+
+    # select suit
+    # suit
+    # or should the suit be handled by js? 
+
+    cod = mongo.db.cards.find_one({'number': str(number)})
+
+    return render_template("cod.html", card=cod, today=today)
 
 # route allowing displaying one record based on its id
 # and possibly editing it (if user is logged in)
