@@ -52,6 +52,13 @@ def cod():
 @app.route('/divination')
 def divination():
     cards = mongo.db.cards.find()
+
+    # shuffling in js or here? 
+
+    # db.articles.aggregate([
+    # { $match : { topic : 3 } },
+    # { $sample : { size: 3 } }
+    # ])
     
     return render_template("cards.html", cards=cards)
 
